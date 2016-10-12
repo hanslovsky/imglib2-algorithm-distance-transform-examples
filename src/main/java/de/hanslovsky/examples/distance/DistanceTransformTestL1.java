@@ -1,7 +1,6 @@
 package de.hanslovsky.examples.distance;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -32,7 +31,6 @@ public class DistanceTransformTestL1
 		final ArrayImg< FloatType, FloatArray > img = ArrayImgs.floats( ( float[] ) imp.getProcessor().convertToFloatProcessor().getPixels(), imp.getWidth(), imp.getHeight() );
 
 		final ArrayImg< FloatType, FloatArray > target = ArrayImgs.floats( imp.getWidth(), imp.getHeight() );
-		final ArrayImg< FloatType, FloatArray > target2 = ArrayImgs.floats( imp.getWidth(), imp.getHeight() );
 
 		final ConvertedRandomAccessibleInterval< FloatType, FloatType > conv = new ConvertedRandomAccessibleInterval<>( img, ( s, t ) -> {
 			t.set( s.get() > 0.0 ? 1e8f : 0.0f );
@@ -43,7 +41,6 @@ public class DistanceTransformTestL1
 		final double[] w = { 1.0, 1.0 };
 
 		DistanceTransform.transform( conv, target, DISTANCE_TYPE.L1, Runtime.getRuntime().availableProcessors(), w );
-		DistanceTransform.transformL1( conv, target2, target2, Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors() ), Runtime.getRuntime().availableProcessors(), w );
 
 		final ArrayImg< DoubleType, DoubleArray > ref = ArrayImgs.doubles( imp.getWidth(), imp.getHeight() );
 		for ( final DoubleType r : ref )
@@ -65,7 +62,6 @@ public class DistanceTransformTestL1
 
 		ImageJFunctions.show( ref, "ref" );
 		ImageJFunctions.show( target, "dt" );
-		ImageJFunctions.show( target2, "dt" );
 
 	}
 

@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import ij.ImageJ;
 import ij.ImagePlus;
 import net.imglib2.algorithm.morphology.distance.DistanceTransform;
+import net.imglib2.algorithm.morphology.distance.DistanceTransform.DISTANCE_TYPE;
 import net.imglib2.algorithm.morphology.distance.EuclidianDistanceIsotropic;
 import net.imglib2.converter.Converter;
 import net.imglib2.converter.read.ConvertedRandomAccessibleInterval;
@@ -58,10 +59,11 @@ public class DistanceTransformTest3 {
 							es,
 							nThreads );
 				else
-					DistanceTransform.transformL1(
+					DistanceTransform.transform(
 							new ConvertedRandomAccessibleInterval<>( img, conv, new DoubleType() ),
 							dt,
 							dt,
+							DISTANCE_TYPE.L1,
 							es,
 							nThreads,
 							5e0 );
