@@ -6,10 +6,12 @@ import java.util.concurrent.Executors;
 
 import ij.ImageJ;
 import ij.ImagePlus;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.morphology.distance.DistanceTransform;
 import net.imglib2.algorithm.morphology.distance.DistanceTransform.DISTANCE_TYPE;
-import net.imglib2.algorithm.morphology.distance.EuclidianDistanceIsotropic;
+import net.imglib2.algorithm.morphology.distance.EuclidianDistanceAnisotropic;
 import net.imglib2.converter.Converter;
+import net.imglib2.converter.Converters;
 import net.imglib2.converter.read.ConvertedRandomAccessibleInterval;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.array.ArrayImg;
@@ -34,15 +36,25 @@ public class DistanceTransformTest3 {
 //		imp.show();
 
 		final ArrayImg< FloatType, FloatArray > img = ArrayImgs.floats( ( float[] ) imp.getProcessor().convertToFloatProcessor().getPixels(), imp.getWidth(), imp.getHeight() );
-		ImageJFunctions.show( img );
 
 		final Converter< FloatType, DoubleType > conv = ( input, output ) -> {
 			output.set( input.getRealDouble() );
 			output.mul( -1.0 );
 		};
 
-		final int N = 5;
-		for ( final int nThreads : new int[] { 1, 2, 3, 4, 5, 6, Runtime.getRuntime().availableProcessors() } )
+		ImageJFunctions.show( Converters.convert( ( RandomAccessibleInterval< FloatType > ) img, conv, new DoubleType() ), "img" );
+
+		final int N = 1;
+		for ( final int nThreads : new int[] { Runtime.getRuntime().availableProcessors() } ) // ,
+																								// 1
+																								// ,
+																								// 2,
+																								// 3,
+																								// 4,
+																								// 5,
+																								// 6,
+														// Runtime.getRuntime().availableProcessors()
+														// } )
 		{
 			final ExecutorService es = Executors.newFixedThreadPool( nThreads );
 			System.out.println( nThreads + " threads" );
@@ -51,13 +63,13 @@ public class DistanceTransformTest3 {
 				final ArrayImg< DoubleType, DoubleArray > dt = ArrayImgs.doubles( imp.getWidth(), imp.getHeight() );
 
 				final long t0 = System.currentTimeMillis();
-				if ( false )
+				if ( true )
 					DistanceTransform.transform(
 							new ConvertedRandomAccessibleInterval<>( img, conv, new DoubleType() ),
 							dt,
-							new EuclidianDistanceIsotropic( 5e-2 ),
+							new EuclidianDistanceAnisotropic( 5e-1, 5e-1 ),
 							es,
-							nThreads );
+							3 * nThreads );
 				else
 					DistanceTransform.transform(
 							new ConvertedRandomAccessibleInterval<>( img, conv, new DoubleType() ),
@@ -65,7 +77,7 @@ public class DistanceTransformTest3 {
 							dt,
 							DISTANCE_TYPE.L1,
 							es,
-							nThreads,
+							3 * nThreads,
 							5e0 );
 				final long t1 = System.currentTimeMillis();
 				System.out.println( t1 - t0 + "ms" );
@@ -73,6 +85,7 @@ public class DistanceTransformTest3 {
 					ImageJFunctions.show( dt, "dt" + nThreads );
 			}
 			System.out.println();
+			es.shutdown();
 		}
 	}
 

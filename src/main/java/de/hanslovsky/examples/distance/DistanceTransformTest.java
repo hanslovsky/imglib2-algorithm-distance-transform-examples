@@ -34,9 +34,8 @@ public class DistanceTransformTest
 
 		ImageJFunctions.show( conv, "conv" );
 
-		final int nThreads = 1;
-
-		DistanceTransform.transform( conv, target, DISTANCE_TYPE.L1, nThreads, 1.0e5 );
+//		DistanceTransform.transform( conv, target, DISTANCE_TYPE.EUCLIDIAN, 1.0e5, 3.0e5 );
+		DistanceTransform.transform( conv, target, DISTANCE_TYPE.EUCLIDIAN, 1.0 );
 //		DistanceTransform.transform( conv, target, new L1DistanceIsotropic( 1e8f / 10 ) );
 //		DistanceTransform.transform( conv, target, new L1DistanceAnisotropic( 1.0, 0.2 ) );
 //		DistanceTransform.transform( conv, target, new EuclidianDistanceAnisotropic( 0.1, 3.0 ) );
@@ -59,7 +58,7 @@ public class DistanceTransformTest
 
 		ImageJFunctions.show( new ConvertedRandomAccessibleInterval<>( target, ( s, t ) -> {
 			t.set( ( ( float ) Math.sqrt( s.get() ) - fMin ) / range * 255.0f );
-		}, new FloatType() ) );
+		}, new FloatType() ), "norm" );
 
 //		final float fMax = max;
 //		final ArrayImg< LongType, LongArray > markers = ArrayImgs.longs( imp.getWidth(), imp.getHeight() );

@@ -1,6 +1,8 @@
 package de.hanslovsky.examples.distance;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -49,7 +51,11 @@ public class DistanceTransformTestL2
 //				new ConvertedRandomAccessibleInterval<>( g, ( s, t ) -> {
 //					t.set( -s.get() );
 //				}, new DoubleType() );
-		DistanceTransform.transform( converted, target, DISTANCE_TYPE.EUCLIDIAN, Runtime.getRuntime().availableProcessors(), 1e-8, 1e-8, 25e-1 );
+		final int nThreads = Runtime.getRuntime().availableProcessors();
+		final ExecutorService es = Executors.newFixedThreadPool( nThreads );
+		final int nTasks = 3 * nThreads;
+		DistanceTransform.transform( converted, target, DISTANCE_TYPE.EUCLIDIAN, es, nTasks, 1e-8, 1e-8, 25e-1 );
+		es.shutdown();
 
 		ImageJFunctions.show( converted );
 		ImageJFunctions.show( target );

@@ -18,7 +18,7 @@ public class DistanceTransformTest2
 		final ArrayImg< FloatType, FloatArray > img = ArrayImgs.floats( f, 1, f.length );
 		final ArrayImg< FloatType, FloatArray > target = ArrayImgs.floats( 1, f.length );
 
-		DistanceTransform.transform( img, target, DISTANCE_TYPE.EUCLIDIAN, 1, 1.0 );
+		DistanceTransform.transform( img, target, DISTANCE_TYPE.EUCLIDIAN, 1.0 );
 
 		for ( final FloatType i : img )
 			System.out.print( i + ", " );

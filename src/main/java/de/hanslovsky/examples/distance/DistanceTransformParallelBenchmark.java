@@ -112,7 +112,11 @@ public class DistanceTransformParallelBenchmark
 			{
 				new FileSaver( imp ).saveAsTiff( targetDir + "/source.tif" );
 				final ArrayImg< DoubleType, DoubleArray > dt = ArrayImgs.doubles( Intervals.dimensionsAsLongArray( wrapped ) );
-				DistanceTransform.transform( img, dt, dType, Runtime.getRuntime().availableProcessors(), weights );
+				final int nThreads = Runtime.getRuntime().availableProcessors();
+				final int nTasks = 3 * nThreads;
+				final ExecutorService es = Executors.newFixedThreadPool( nThreads );
+				DistanceTransform.transform( img, dt, dType, es, nTasks, weights );
+				es.shutdown();
 				new FileSaver( ImageJFunctions.wrap( dt, "" ) ).saveAsTiff( targetDir + "/dt.tif" );
 			}
 

@@ -1,6 +1,8 @@
 package de.hanslovsky.examples.distance;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -40,7 +42,13 @@ public class DistanceTransformTestL1
 
 		final double[] w = { 1.0, 1.0 };
 
-		DistanceTransform.transform( conv, target, DISTANCE_TYPE.L1, Runtime.getRuntime().availableProcessors(), w );
+		final int nThreads = Runtime.getRuntime().availableProcessors();
+		final int nTasks = 3 * nThreads;
+		final ExecutorService es = Executors.newFixedThreadPool( nThreads );
+
+		DistanceTransform.transform( conv, target, DISTANCE_TYPE.L1, es, nTasks, w );
+
+		es.shutdown();
 
 		final ArrayImg< DoubleType, DoubleArray > ref = ArrayImgs.doubles( imp.getWidth(), imp.getHeight() );
 		for ( final DoubleType r : ref )
